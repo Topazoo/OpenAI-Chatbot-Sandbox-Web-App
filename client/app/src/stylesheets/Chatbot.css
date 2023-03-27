@@ -1,0 +1,17 @@
+.message-content {
+    white-space: pre-wrap;
+  }
+
+  .assistant {
+    background-color: #e6f3ff;
+    border-radius: 10px;
+  }
+  
+  .user {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+  }
+
+  .chatbot-container {
+    padding-bottom: 50px;
+  }

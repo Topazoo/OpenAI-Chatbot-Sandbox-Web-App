@@ -10,14 +10,10 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install app dependencies
 COPY app/package.json ./
 COPY app/package-lock.json ./
-RUN npm install --no-package-lock && npm install react-scripts -g && npm install pusher-js -g
+RUN npm install --no-package-lock && npm install react-scripts -g
 
 # add app
 COPY ./app ./
-
-# Had to throw these in to recompile sass to work on node:alpine
-RUN apk add --no-cache python2 make g++
-RUN npm uninstall node-sass && npm install node-sass@4.14.1 --sass-binary-name=linux_musl-x64-83
 
 # build app
 RUN npm run build

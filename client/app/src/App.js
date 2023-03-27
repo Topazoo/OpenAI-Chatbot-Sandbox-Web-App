@@ -6,12 +6,11 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { Container } from 'react-bootstrap';
 import Header from './components/Header';
-import Home from './components/Home';
+import ChatList from './components/Chatlist.js';
 import NavigationBar from './components/Navbar.js';
 import Footer from './components/Footer';
 import LoginSignup from './components/LoginSignup';
-// import PasswordResetForm from './components/forms/password_reset_form.js';
-// import FourOhFour from './components/fourohfour.js';
+import Chatbot from './components/Chatbot';
 import PrivateRoute from './components/routes/private_route.js';
 
 import { AuthContext } from './context/auth_context.js';
@@ -67,7 +66,8 @@ function App() {
             <Container>
               <Switch>
                 <Route exact path="/login" component={LoginSignup} />
-                <PrivateRoute exact path="/home" component={Home} />
+                <PrivateRoute exact path="/home" component={ChatList} />
+                <PrivateRoute path="/home/:chatId" component={Chatbot} />
                 <Redirect exact path="/" to="/home" />
                 <Redirect to="/404" />
               </Switch>
