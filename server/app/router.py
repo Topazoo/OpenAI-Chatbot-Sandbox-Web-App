@@ -12,8 +12,9 @@ from routes import login
 # User Route Logic
 from routes import users
 
-# Password Reset Route Logic
-from routes import password_reset
+# AI Route Logic
+from routes import chatbot
+from routes import chatlist
 
 ROUTES = \
 {
@@ -44,19 +45,24 @@ ROUTES = \
         schema=USER_ROUTE_SCHEMA
     ),
 
-    # Password Reset (Send Email, Check Token, Update Password)
-    # Requires Gmail configuration in environment
-    # 'password_reset': Route(
-    #     url='/api/password_reset',
-    #     handler=RouteHandler(
-    #         verifier=password_reset.verifier,
-    #         GET=password_reset.GET,
-    #         POST=password_reset.POST,
-    #         PUT=password_reset.PUT
-    #     ),
-    #     collection='reset_tokens',
-    #     schema=PASSWORD_RESET_ROUTE_SCHEMA
-    # ),
+    'chatbot': Route(
+        url='/api/chatbot',
+        handler=PermissionsRouteHandler(
+            POST=chatbot.POST,
+            GET=chatbot.GET,
+            permissions=Permissions(POST=['USER'])
+        ),
+        collection='chats',
+    ),
+
+    'chatlist': Route(
+        url='/api/chats',
+        handler=PermissionsRouteHandler(
+            GET=chatlist.GET,
+            permissions=Permissions(POST=['USER'])
+        ),
+        collection='chats',
+    ),
 
     # API-Modifiable Config
     'config': Route(

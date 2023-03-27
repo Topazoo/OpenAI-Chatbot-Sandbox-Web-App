@@ -44,6 +44,9 @@ services:
       GMAIL_OAUTH_CLIENT_ID: ${GMAIL_OAUTH_CLIENT_ID}
       GMAIL_OAUTH_CLIENT_X509_CERT_URL: ${GMAIL_OAUTH_CLIENT_X509_CERT_URL}
 
+      # OpenAI
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
       # RabbitMQ
       USE_TASKS: "false"
       # Redis
