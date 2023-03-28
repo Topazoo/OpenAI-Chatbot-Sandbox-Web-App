@@ -12,6 +12,7 @@ const LoginSignup = () => {
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
+    setErrors({});
   };
 
 
@@ -77,18 +78,21 @@ const LoginSignup = () => {
                 // TODO -- Constants file for backend error codes?
                 const response = e.response;
                 if (
-                    response.status == 409 &&
+                    response.status === 409 &&
                     response.data.error.includes('email')
                 ) {
                     setErrors({message: 'This email is already taken'});
                     return;
                 }
-                if (
-                    response.status == 409 &&
+                else if (
+                    response.status === 409 &&
                     response.data.error.includes('username')
                 ) {
                     setErrors({message: 'This username is already taken'});
                     return;
+                } 
+                else if (response.status !== 200) {
+                    setErrors({message:`Error ${response.status}: ${response.data.error}`});
                 }
             });
     };
@@ -104,6 +108,11 @@ const LoginSignup = () => {
             </div>
         </div>
         <div className="form-container">
+            {errors.message && (
+                <div className="error-message">
+                {errors.message}
+                </div>
+            )} 
             <form className={`form ${isLogin ? 'login-form' : 'signup-form'}`} onSubmit={isLogin ? login : signup}>
                 {isLogin ? (
                 <>

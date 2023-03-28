@@ -34,6 +34,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
   }
   
   .form {
@@ -90,4 +91,12 @@
 
   .full-grid-row {
     grid-column: span 2;
+  }
+
+  .error-message {
+    color: red;
+    text-align: center;
+    font-size: 0.8rem;
+    z-index: 1;
+    margin-bottom: -1vw;
   }

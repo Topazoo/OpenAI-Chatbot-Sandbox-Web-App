@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import { useParams, useHistory, Link, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useContext, useRef} from 'react';
 import { AuthContext } from '../context/auth_context';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -7,13 +7,18 @@ import { Container, Row, Col, Form, Button, ListGroup, Spinner  } from 'react-bo
 import '../stylesheets/Chatbot.css';
 
 const Chatbot = () => {
+  const location = useLocation();
+
   const { chatId } = useParams();
   const { auth, authDispatch } = useContext(AuthContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
+  const [chatName, setChatName] = useState(location.state?.chatName || 'Chat');
+
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
+
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -38,6 +43,7 @@ const Chatbot = () => {
     try {
       const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&include_directives=false`);
       setMessages(response.data.data);
+      setChatName(response.data.chat_name);
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
@@ -64,10 +70,11 @@ const Chatbot = () => {
 
   return (
     <Container className="chatbot-container">
+        <br></br>
       <Row className="mb-2">
         <Col>
           <Link to="/">
-            <div style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
+            <div style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', paddingBottom: '1vw' }}>
               <FaArrowLeft style={{ marginRight: '4px' }} />
               <span>Back to Chat List</span>
             </div>
@@ -76,7 +83,9 @@ const Chatbot = () => {
       </Row>
       <Row>
         <Col>
-            <h1>Chatbot</h1>
+            <div className="page-subtitle">
+                <h2>{chatName}</h2>
+            </div>
             {isLoading ? (
             <Spinner animation="border" role="status">
                 <span className="sr-only">Loading...</span>
