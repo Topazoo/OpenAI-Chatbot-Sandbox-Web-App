@@ -89,7 +89,7 @@ const Chatlist = () => {
                     type="text"
                     value={newChatName}
                     onChange={(e) => setNewChatName(e.target.value)}
-                    placeholder="New chat name"
+                    placeholder="New character name"
                   />
                   <Button variant="primary" type="submit" className="ml-2" disabled={isLoading}>
                     Create
