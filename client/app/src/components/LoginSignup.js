@@ -92,7 +92,7 @@ const LoginSignup = () => {
                     return;
                 } 
                 else if (response.status !== 200) {
-                    setErrors({message:`Error ${response.status}: ${response.statusText}`});
+                    setErrors({message:`Error ${response.status}: ${response.data.error}`});
                 }
             });
     };
