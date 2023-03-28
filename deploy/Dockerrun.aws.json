@@ -1,0 +1,13 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "767462030548.dkr.ecr.us-west-1.amazonaws.com/character-creator-prod",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": 5000,
+        "HostPort": 5000
+      }
+    ]
+}
