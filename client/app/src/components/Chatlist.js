@@ -16,9 +16,12 @@ const Chatlist = () => {
         fetchChats();
     }, []);
   
-    const goToChat = (chatId) => {
-      history.push(`/home/${chatId}`);
-    };
+    const goToChat = (chatId, chatName) => {
+        history.push({
+          pathname: `/home/${chatId}`,
+          state: { chatName: chatName },
+        });
+      };
 
     const fetchChats = async () => {
         try {
@@ -55,7 +58,10 @@ const Chatlist = () => {
         <Container>
           <Row>
             <Col>
-              <h1>Chats</h1>
+              <div className="page-subtitle">
+                <br></br>
+                <h2>Characters</h2>
+              </div>
               {isLoading ? (
                 <Spinner animation="border" role="status">
                   <span className="sr-only">Loading...</span>
@@ -65,7 +71,7 @@ const Chatlist = () => {
                   {chats.map((chat) => (
                     <ListGroup.Item
                       key={chat._id}
-                      onClick={() => goToChat(chat._id)}
+                      onClick={() => goToChat(chat._id, chat.chat_name)}
                       style={{ cursor: 'pointer' }}
                     >
                       {chat.chat_name}

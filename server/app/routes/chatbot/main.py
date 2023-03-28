@@ -61,4 +61,4 @@ def GET(request:Request, payload:dict, collection:Collection):
     if include_directives:
         data = current_chat["directives"] + data
     
-    return {"data": data, "_id": chat_id}
+    return {"data": data, "_id": chat_id, "chat_name": current_chat["chat_name"]}
