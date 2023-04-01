@@ -19,7 +19,11 @@ def POST(request:Request, payload:dict, collection:Collection):
     if not chat_id:
         # Create a new chat
         client = CharacterCreationAIManager.get_client_with_initial_context()
-        result = client.run_prompt()
+        try:
+            result = client.run_prompt()
+        except Exception as e:
+            return JsonError({"error": str(e), "context": client.get_context()})
+        
         chat_id = collection.insert_one({
             "user_id": ObjectId(user_id),
             "chat_name": chat_name,
