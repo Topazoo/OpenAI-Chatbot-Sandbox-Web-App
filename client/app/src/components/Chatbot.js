@@ -13,6 +13,7 @@ const Chatbot = () => {
   const { auth, authDispatch } = useContext(AuthContext);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
   const [messages, setMessages] = useState([]);
   const [chatName, setChatName] = useState(location.state?.chatName || 'Chat');
   const [directiveId, setDirectiveId] = useState(location.state?.directiveId);
@@ -24,6 +25,7 @@ const Chatbot = () => {
 
   const sendMessage = (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     axios.post('/api/chatbot', {
             user_chat: input,
@@ -38,7 +40,9 @@ const Chatbot = () => {
             ];
             setMessages(newMessages);
             setInput('');
-        });
+        }).finally(() => {
+            setIsSending(false);
+          });
   };
 
   const fetchMessages = async () => {
@@ -140,9 +144,15 @@ const Chatbot = () => {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Enter your message"
               />
-              <Button type="submit" className="ml-2">
+            <Button type="submit" className="ml-2" disabled={isSending}>
+              {isSending ? (
+                <Spinner animation="border" size="sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </Spinner>
+              ) : (
                 <i className="fas fa-arrow-right"></i>
-              </Button>
+              )}
+            </Button>
             </Form.Group>
           </Form>
         </Col>
