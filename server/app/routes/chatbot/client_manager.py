@@ -5,21 +5,18 @@ from openai_client.clients import Chat_Bot_Client
 from dead_simple_framework import Database
 
 # Typing
+from pymongo.collection import ObjectId
 from typing import List, Dict
 
-class CharacterCreationAIManager:
+class ChatBot_Client_Context_Manager:
 
-    def get_client_with_initial_context() -> Chat_Bot_Client:
-        _client = Chat_Bot_Client()
+    def get_client_with_directive_context(directive_id:str) -> Chat_Bot_Client:
+        with Database(collection='directives') as directives_db:
+            directive_data = dict(directives_db.find_one({"_id": ObjectId(directive_id)}))
+            _client = Chat_Bot_Client(directives=directive_data["directives"])
 
-        with Database(collection='config') as config_db:
-            directives = dict(config_db.find_one({"name": "DIRECTIVES"})).get("value")
-            
-            for directive in directives:
-                # Add high level directives
-                _client.add_directive(directive)
+            return _client
 
-        return _client
 
     def get_client_with_context(directives:List[str], statements:List[Dict]=None):
         _client = Chat_Bot_Client(directives=directives, statements=statements)

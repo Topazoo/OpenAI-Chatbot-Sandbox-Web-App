@@ -4,7 +4,7 @@ from dead_simple_framework.handlers import UserRouteHandler, LoginRouteHandler, 
     DefaultPermissionsRouteHandler, Permissions, PermissionsRouteHandler
 
 # Schemas
-from schemas import USER_ROUTE_SCHEMA, AUTH_ROUTE_SCHEMA, CONFIG_ROUTE_SCHEMA, PASSWORD_RESET_ROUTE_SCHEMA
+from schemas import USER_ROUTE_SCHEMA, AUTH_ROUTE_SCHEMA, CONFIG_ROUTE_SCHEMA
 
 # Login Route Logic
 from routes import login
@@ -14,7 +14,6 @@ from routes import users
 
 # AI Route Logic
 from routes import chatbot
-from routes import chatlist
 
 ROUTES = \
 {
@@ -57,11 +56,18 @@ ROUTES = \
 
     'chatlist': Route(
         url='/api/chats',
-        handler=PermissionsRouteHandler(
-            GET=chatlist.GET,
-            permissions=Permissions(POST=['USER'])
+        handler=DefaultPermissionsRouteHandler(
+            permissions=Permissions(POST=['USER'], GET=['USER'], DELETE=["USER"])
         ),
-        collection='chats',
+        collection='chatlist',
+    ),
+
+    'directives': Route(
+        url='/api/directives',
+        handler=DefaultPermissionsRouteHandler(
+            permissions=Permissions(POST=['USER'], GET=['USER'], PUT=['USER'], DELETE=["USER"])
+        ),
+        collection='directives',
     ),
 
     # API-Modifiable Config
