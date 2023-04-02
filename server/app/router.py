@@ -73,7 +73,7 @@ ROUTES = \
     # API-Modifiable Config
     'config': Route(
         url='/api/config',
-        handler=DefaultPermissionsRouteHandler(permissions=Permissions(POST=['ADMIN'], PUT=['ADMIN'], DELETE=['ADMIN'], GET=['ADMIN'])),
+        handler=DefaultPermissionsRouteHandler(permissions=Permissions(POST=['ADMIN'], PUT=['ADMIN'], DELETE=['ADMIN'])),
         collection='config',
         schema=CONFIG_ROUTE_SCHEMA
     ),
