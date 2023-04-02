@@ -30,7 +30,7 @@ const Chatbot = () => {
         return `: [${errorMessage}]\n`;
     }
 
-    return '';
+    return '\n';
   };
 
   const sendMessage = (e) => {

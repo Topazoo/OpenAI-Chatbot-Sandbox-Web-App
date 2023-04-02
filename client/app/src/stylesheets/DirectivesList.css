@@ -1,0 +1,13 @@
+.modal-example {
+    padding-top: 15px;
+    overflow-wrap: break-word;
+}
+
+.modal-pre {
+    white-space: pre-wrap;
+}
+
+.list-container {
+    max-height: 350px;
+    overflow-y: auto;
+  }
