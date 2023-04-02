@@ -1,31 +1,37 @@
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/auth_context';
+import { FaArrowLeft } from 'react-icons/fa';
 import { Container, Row, Col, Form, Button, ListGroup, Spinner } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link, useLocation, useParams } from 'react-router-dom';
 
 const Chatlist = () => {
     const { auth, authDispatch } = useContext(AuthContext);
     const [chats, setChats] = useState([]);
     const [newChatName, setNewChatName] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // Add this line
+    const [isLoading, setIsLoading] = useState(false);
     const history = useHistory();
+    const location = useLocation();
+    const [directiveName, setDirectiveName] = useState(location.state?.directiveName || '');
+    const { directiveId } = useParams();
+
   
     useEffect(() => {
         setIsLoading(true);
         fetchChats();
+        fetchDirectiveName();
     }, []);
   
     const goToChat = (chatId, chatName) => {
         history.push({
-          pathname: `/home/${chatId}`,
-          state: { chatName: chatName },
+          pathname: `/home/chats/${chatId}`,
+          state: { chatName: chatName, directiveId: directiveId, directiveName: directiveName },
         });
       };
 
     const fetchChats = async () => {
         try {
-          const response = await axios.get(`/api/chats?user_id=${auth._id}`);
+          const response = await axios.get(`/api/chats?user_id=${auth._id}&directive_id=${directiveId}`);
           setChats(response.data.data);
         } catch (error) {
           console.error('Error fetching chats:', error);
@@ -33,19 +39,34 @@ const Chatlist = () => {
           setIsLoading(false);
         }
       };
+
+    const fetchDirectiveName = async () => {
+        try {
+            const response = await axios.get(`/api/directives?user_id=${auth._id}&_id=${directiveId}`);
+            const directive = response.data.data.find(d => d._id === directiveId);
+            if (directive) {
+                setDirectiveName(directive.name);
+            }
+        } catch (error) {
+            console.error('Error fetching directive name:', error);
+        }
+    };
   
     const createNewChat = (e) => {
       e.preventDefault();
       setIsLoading(true);
 
-      axios.post('/api/chatbot', {
-              user_id: auth._id,
-              chat_name: newChatName
-          })
+      const newChat = {
+        user_id: auth._id,
+        directive_id: directiveId,
+        name: newChatName
+      };
+
+      axios.post('/api/chats', newChat)
           .then((response) => {
               const newChats = [
                   ...chats,
-                  {...response.data, chat_name: newChatName}
+                  {_id: response.data._id, ...newChat}
               ];
               setChats(newChats);
               setNewChatName('');
@@ -56,11 +77,23 @@ const Chatlist = () => {
   
     return (
         <Container>
+            <Row>
+                <Col>
+                    <br></br>
+                    <Link to="/home">
+                    <div style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', paddingBottom: '1vw' }}>
+                        <FaArrowLeft style={{ marginRight: '4px' }} />
+                        <span>Directives List</span>
+                    </div>
+                    </Link>
+                </Col>
+            </Row>
           <Row>
             <Col>
               <div className="page-subtitle">
                 <br></br>
-                <h2>Characters</h2>
+                <h2>Chats</h2>
+                <h5>{`Using the "${directiveName}" Directive`}</h5>
               </div>
               {isLoading ? (
                 <Spinner animation="border" role="status">
@@ -71,10 +104,10 @@ const Chatlist = () => {
                   {chats.map((chat) => (
                     <ListGroup.Item
                       key={chat._id}
-                      onClick={() => goToChat(chat._id, chat.chat_name)}
+                      onClick={() => goToChat(chat._id, chat.name)}
                       style={{ cursor: 'pointer' }}
                     >
-                      {chat.chat_name}
+                      {chat.name}
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
@@ -89,7 +122,7 @@ const Chatlist = () => {
                     type="text"
                     value={newChatName}
                     onChange={(e) => setNewChatName(e.target.value)}
-                    placeholder="New character name"
+                    placeholder="New chat name"
                   />
                   <Button variant="primary" type="submit" className="ml-2" disabled={isLoading}>
                     Create

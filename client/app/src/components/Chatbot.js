@@ -15,6 +15,8 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [chatName, setChatName] = useState(location.state?.chatName || 'Chat');
+  const [directiveId, setDirectiveId] = useState(location.state?.directiveId);
+  const [directiveName, setDirectiveName] = useState(location.state?.directiveName || '');
 
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
@@ -41,9 +43,8 @@ const Chatbot = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&include_directives=false`);
+      const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&directive_id=${directiveId}&include_directives=false`);
       setMessages(response.data.data);
-      setChatName(response.data.chat_name);
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
@@ -51,6 +52,30 @@ const Chatbot = () => {
     }
   };
   
+  const fetchChatData = async () => {
+    try {
+        const response = await axios.get(`/api/chats?user_id=${auth._id}&_id=${chatId}`);
+        const chat = response.data.data.find(d => d._id === chatId);
+        if (chat) {
+            setChatName(chat.name);
+            setDirectiveId(chat.directive_id);
+        }
+    } catch (error) {
+        console.error('Error fetching chat info:', error);
+    }
+  };
+
+  const fetchDirectiveName = async () => {
+    try {
+        const response = await axios.get(`/api/directives?user_id=${auth._id}&_id=${directiveId}`);
+        const directive = response.data.data.find(d => d._id === directiveId);
+        if (directive) {
+            setDirectiveName(directive.name);
+        }
+    } catch (error) {
+        console.error('Error fetching directive name:', error);
+    }
+  };
 
   const renderMessage = (message, index) => (
     <ListGroup.Item key={index} className={`${message.role} message-content`}>
@@ -59,8 +84,15 @@ const Chatbot = () => {
   );
 
   useEffect(() => {
-    fetchMessages();
+    fetchChatData();
   }, []);
+
+  useEffect(() => {
+    if(directiveId !== undefined) {
+        fetchMessages();
+        fetchDirectiveName();
+    }
+  }, [directiveId]);
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -73,10 +105,10 @@ const Chatbot = () => {
         <br></br>
       <Row className="mb-2">
         <Col>
-          <Link to="/">
+          <Link to={`/home/${directiveId}/chats`}>
             <div style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', paddingBottom: '1vw' }}>
               <FaArrowLeft style={{ marginRight: '4px' }} />
-              <span>Back to Chat List</span>
+              <span>{`Chats using the "${directiveName}" Directive`}</span>
             </div>
           </Link>
         </Col>

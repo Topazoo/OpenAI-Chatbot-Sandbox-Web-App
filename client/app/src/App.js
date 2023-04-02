@@ -7,6 +7,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Header from './components/Header';
 import ChatList from './components/Chatlist.js';
+import DirectiveList from './components/DirectivesList';
 import NavigationBar from './components/Navbar.js';
 import Footer from './components/Footer';
 import LoginSignup from './components/LoginSignup';
@@ -60,22 +61,23 @@ function App() {
 
     return (
         <div className="app">
-          <Header />
-          <NavigationBar />
-          <div className="main-content">
-            <Container>
-              <Switch>
-                <Route exact path="/login" component={LoginSignup} />
-                <PrivateRoute exact path="/home" component={ChatList} />
-                <PrivateRoute path="/home/:chatId" component={Chatbot} />
-                <Redirect exact path="/" to="/home" />
-                <Redirect to="/404" />
-              </Switch>
-            </Container>
-          </div>
-          <Footer />
+            <Header />
+                <NavigationBar />
+                <div className="main-content">
+                    <Container>
+                        <Switch>
+                            <Route exact path="/login" component={LoginSignup} />
+                            <PrivateRoute exact path="/home" component={DirectiveList} />
+                            <PrivateRoute path="/home/:directiveId/chats" component={ChatList} />
+                            <PrivateRoute path="/home/chats/:chatId" component={Chatbot} />
+                            <Redirect exact path="/" to="/home" />
+                            <Redirect to="/404" />
+                        </Switch>
+                    </Container>
+                </div>
+            <Footer />
         </div>
-      );
+    );
 }
 
 export default App;
