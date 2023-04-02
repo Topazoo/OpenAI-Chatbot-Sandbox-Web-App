@@ -24,6 +24,7 @@ APP_USE_JWT=True
 USE_SLACK=False
 USE_SENTRY=False
 APP_JWT_LIFESPAN=1800
+OPENAI_API_KEY=<Your API Key>
 ```
 
 ## Backend
