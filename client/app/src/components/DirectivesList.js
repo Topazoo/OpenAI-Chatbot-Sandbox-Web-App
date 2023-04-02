@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../context/auth_context';
+import '../stylesheets/DirectivesList.css';
 import axios from 'axios';
 import { Container, Row, Col, ListGroup, Form, Button, Modal, Spinner } from 'react-bootstrap';
 
@@ -9,6 +10,8 @@ const DirectiveList = () => {
     const [directives, setDirectives] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
+    const [showExample, setShowExample] = useState(false);
     const [modalType, setModalType] = useState('add');
     const [modalDirectiveId, setModalDirectiveId] = useState(null);
     const [newDirectiveName, setNewDirectiveName] = useState('');
@@ -44,6 +47,13 @@ const DirectiveList = () => {
         setShowModal(true);
     };
 
+    const toggleHelpModal = () => {
+        setShowHelpModal(!showHelpModal);
+    };
+    const handleShowExample = () => {
+        setShowExample(!showExample);
+      };
+
     const handleCloseModal = () => {
         setShowModal(false);
         setNewDirectiveName('');
@@ -54,7 +64,7 @@ const DirectiveList = () => {
         const newDirective = {
           user_id: auth._id,
           name: newDirectiveName,
-          directives: newDirectiveContent.split('\n'),
+          directives: newDirectiveContent.split('\n').filter(line => line.trim() !== ''),
         };
       
         if (modalType === 'add') {
@@ -62,7 +72,7 @@ const DirectiveList = () => {
             .then((response) => {
               const savedDirective = {
                 name: newDirectiveName,
-                directives: newDirectiveContent.split('\n'),
+                directives: newDirectiveContent.split('\n').filter(line => line.trim() !== ''),
                 _id: response.data._id
               };
               setDirectives([...directives, savedDirective]);
@@ -74,7 +84,7 @@ const DirectiveList = () => {
             .then((response) => {
               const savedDirective = {
                 name: newDirectiveName,
-                directives: newDirectiveContent.split('\n'),
+                directives: newDirectiveContent.split('\n').filter(line => line.trim() !== ''),
                 _id: modalDirectiveId
               };
               const updatedDirectives = directives.map(directive => (
@@ -94,12 +104,15 @@ const DirectiveList = () => {
     };
 
     return (
-        <Container>
+        <Container className='body-container'>
             <Row>
             <Col>
                 <div className="page-subtitle">
-                <br />
-                <h2>Directives</h2>
+                    <br />
+                    <h2 style={{ display: 'inline' }}>Directives</h2>
+                    <Button variant="info" onClick={toggleHelpModal} style={{ float: 'right' }}>
+                        Help
+                    </Button>
                 </div>
                 {isLoading ? (
                 <Spinner animation="border" role="status">
@@ -175,6 +188,49 @@ const DirectiveList = () => {
                 Save
                 </Button>
             </Modal.Footer>
+            </Modal>
+            <Modal show={showHelpModal} onHide={toggleHelpModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Help</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>On this page you can create or edit custom chatbot <b>Directives</b>.</p>
+                    <p>Chatbot "Directives" are <i>overall rules or instructions the chatbot should follow</i> when responding to user input.</p>
+                    <p>Once you have created a custom directive you can select it from the Directives list start creating charts governed by your custom directive.</p>
+                    <p>For an example and inspiration creating a custom directive, select "Show Example".</p>
+                    <Button variant="secondary" onClick={handleShowExample}>
+                    Show Example
+                    </Button>
+                    {showExample && (
+                    <div className='modal-example'>
+                        <h5>Example Directive:</h5>
+                        <p>Name: Tweet Classifier</p>
+                        <p>Commands:</p>
+                        <pre className='modal-pre'>
+                        You are a chatbot tasked with classifying the sentiment of tweets.{'\n'}
+                        You should classify the tweet as positive, negative or neutral.{'\n'}
+                        You should ask the user to input a tweet and then output the tweet with the classification{'\n'}
+                        ---{'\n'}
+                        Examples:{'\n'}
+                        AI: Please enter a tweet:{'\n'}
+                        User: The amusement park was fun!{'\n'}
+                        AI: Tweet - The amusement park was fun! | Sentiment - Positive{'\n'}
+                        AI: Please enter another tweet:{'\n'}
+                        User: The food was ok{'\n'}
+                        AI: Tweet - The food was ok | Sentiment - Neutral{'\n'}
+                        ---{'\n'}
+                        Start with the following output to prompt the user: "Please enter a Tweet"
+                        </pre>
+                    </div>
+                    )}
+                    <p style={{"paddingTop": "15px"}}>Note that the AI is fickle and may respond differently, even to the same prompt.</p>
+                    <p>Specificity, examples and some trial and error are necessary :)</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={toggleHelpModal}>
+                    Close
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </Container>
     );

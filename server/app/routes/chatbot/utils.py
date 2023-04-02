@@ -1,5 +1,5 @@
 # Clients
-from .client_manager import ChatBot_Client_Context_Manager
+from .client_manager import get_client_with_context, get_client_with_directive_context
 
 # Exceptions
 from dead_simple_framework.api import JsonError
@@ -8,7 +8,7 @@ from dead_simple_framework.api import JsonError
 from pymongo.collection import Collection, ObjectId
 
 def create_new_chat(payload:dict, collection:Collection):
-    client = ChatBot_Client_Context_Manager.get_client_with_directive_context(payload.get('directive_id'))
+    client = get_client_with_directive_context(payload.get('directive_id'))
 
     try:
         client.run_prompt()
@@ -55,7 +55,7 @@ def update_chat(payload:dict, collection:Collection) -> str:
     """ Update chat with user input """
 
     chat = get_chat(payload, collection)        
-    client = ChatBot_Client_Context_Manager.get_client_with_context(chat["directives"], chat["statements"])
+    client = get_client_with_context(chat["directives"], chat["statements"])
         
     client.add_statement("user", payload.get('user_chat'))
     result = client.run_prompt()

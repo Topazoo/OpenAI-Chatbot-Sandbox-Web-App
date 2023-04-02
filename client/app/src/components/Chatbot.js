@@ -19,42 +19,62 @@ const Chatbot = () => {
   const [directiveId, setDirectiveId] = useState(location.state?.directiveId);
   const [directiveName, setDirectiveName] = useState(location.state?.directiveName || '');
 
+  const [callError, setCallError] = useState('');
+
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
 
+  const formatError = (error) => {
+    const errorMessage = error.response?.data?.error;
+    if(errorMessage !== undefined) {
+        return `: [${errorMessage}]\n`;
+    }
+
+    return '\n';
+  };
 
   const sendMessage = (e) => {
     e.preventDefault();
     setIsSending(true);
-
-    axios.post('/api/chatbot', {
-            user_chat: input,
-            chat_id: chatId,
-            user_id: auth._id
-        })
-        .then((response) => {
-            const newMessages = [
-                ...messages,
-                { "role": "user", "content": input },
-                { "role": "assistant", "content": response.data.data }
-            ];
-            setMessages(newMessages);
-            setInput('');
-        }).finally(() => {
-            setIsSending(false);
-          });
-  };
+  
+    axios
+      .post('/api/chatbot', {
+        user_chat: input,
+        chat_id: chatId,
+        user_id: auth._id,
+      })
+      .then((response) => {
+        const newMessages = [
+          ...messages,
+          { role: 'user', content: input },
+          { role: 'assistant', content: response.data.data },
+        ];
+        setMessages(newMessages);
+        setInput('');
+      })
+      .catch((error) => {
+        const errorMessage = `There was an error sending your message${formatError(error)}Please try again.`;
+        console.error(errorMessage);
+        setCallError(errorMessage);
+      })
+      .finally(() => {
+        setIsSending(false);
+      });
+  };  
 
   const fetchMessages = async () => {
     try {
       const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&directive_id=${directiveId}&include_directives=false`);
       setMessages(response.data.data);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      const errorMessage = `There was an loading your messages${formatError(error)}Please reload the page.`;
+      console.error(errorMessage);
+      setCallError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
+  
   
   const fetchChatData = async () => {
     try {
@@ -65,8 +85,12 @@ const Chatbot = () => {
             setDirectiveId(chat.directive_id);
         }
     } catch (error) {
-        console.error('Error fetching chat info:', error);
-    }
+        const errorMessage = `There was an loading your messages${formatError(error)}Please reload the page.`;
+        console.error(errorMessage);
+        setCallError(errorMessage);
+    } finally {
+        setIsLoading(false);
+      }
   };
 
   const fetchDirectiveName = async () => {
@@ -77,16 +101,23 @@ const Chatbot = () => {
             setDirectiveName(directive.name);
         }
     } catch (error) {
-        console.error('Error fetching directive name:', error);
-    }
+        const errorMessage = `There was an loading directive data${formatError(error)}Please reload the page.`;
+        console.error(errorMessage);
+        setCallError(errorMessage);
+    } finally {
+        setIsLoading(false);
+      }
   };
 
   const renderMessage = (message, index) => (
-    <ListGroup.Item key={index} className={`${message.role} message-content`}>
+    <ListGroup.Item
+      key={index}
+      className={`${message.role} message-content`}
+    >
       {message.content}
     </ListGroup.Item>
   );
-
+  
   useEffect(() => {
     fetchChatData();
   }, []);
@@ -127,10 +158,15 @@ const Chatbot = () => {
                 <span className="sr-only">Loading...</span>
             </Spinner>
             ) : (
-            <ListGroup style={{ maxHeight: '400px', overflowY: 'scroll' }}>
-                {messages.map(renderMessage)}
-                <div ref={bottomRef} />
-            </ListGroup>
+                <ListGroup style={{ maxHeight: '400px', overflowY: 'scroll' }}>
+                    {messages.map(renderMessage)}
+                    {callError && (
+                        <ListGroup.Item className="error">
+                        {callError}
+                        </ListGroup.Item>
+                    )}
+                    <div ref={bottomRef} />
+                </ListGroup>
             )}
         </Col>
       </Row>
