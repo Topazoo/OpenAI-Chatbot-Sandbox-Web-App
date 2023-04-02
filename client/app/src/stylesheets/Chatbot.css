@@ -19,3 +19,11 @@
   .page-subtitle {
     padding-bottom: 3vw;
   }
+
+  .error {
+    background-color: #d33f4b;
+    color: #000000;
+    border-radius: 10px;
+    white-space: pre-wrap;
+  }
+  
