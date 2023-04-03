@@ -161,12 +161,10 @@ const Chatlist = () => {
                 chat but will not impact any other chats.
             </p>
             <p>
-                To create a new chat, enter the chat name in the input field and click the "Create"
-                button.
+                To create a new chat, enter the chat name in the input field and click the "Create" button.
             </p>
             <p>
-                Click on a chat from the list to open the chat page where you can start interacting
-                with the AI using the selected directive.
+                Click on a chat to open the chat page and interact with the AI using the selected directive.
             </p>
             </Modal.Body>
             <Modal.Footer>
