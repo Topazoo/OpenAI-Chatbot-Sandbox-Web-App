@@ -196,7 +196,7 @@ const DirectiveList = () => {
                 <Modal.Body>
                     <p>On this page you can create or edit custom chatbot <b>Directives</b>.</p>
                     <p>Chatbot "Directives" are <i>overall rules or instructions the chatbot should follow</i> when responding to user input.</p>
-                    <p>Once you have created a custom directive you can select it from the Directives list start creating charts governed by your custom directive.</p>
+                    <p>Once you have created a custom directive you can select it from the Directives list to start creating chats governed by your custom directive.</p>
                     <p>For an example and inspiration creating a custom directive, select "Show Example".</p>
                     <Button variant="secondary" onClick={handleShowExample}>
                     Show Example
