@@ -19,7 +19,7 @@ const Footer = () => {
 
   useEffect(() => {
     fetchModelName();
-  });
+  }, []);
 
   return (
     <footer className="footer">

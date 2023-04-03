@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useParams, useHistory, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useContext, useRef} from 'react';
 import { AuthContext } from '../context/auth_context';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -10,7 +10,7 @@ const Chatbot = () => {
   const location = useLocation();
 
   const { chatId } = useParams();
-  const { auth, authDispatch } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
@@ -64,7 +64,7 @@ const Chatbot = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&directive_id=${directiveId}&include_directives=false`);
+      const response = await axios.get(`/api/chatbot?chat_id=${chatId}&user_id=${auth._id}&directive_id=${directiveId}`);
       setMessages(response.data.data);
     } catch (error) {
       const errorMessage = `There was an loading your messages${formatError(error)}Please reload the page.`;
@@ -85,12 +85,10 @@ const Chatbot = () => {
             setDirectiveId(chat.directive_id);
         }
     } catch (error) {
-        const errorMessage = `There was an loading your messages${formatError(error)}Please reload the page.`;
+        const errorMessage = `There was an loading chat metadata${formatError(error)}Please reload the page.`;
         console.error(errorMessage);
         setCallError(errorMessage);
-    } finally {
-        setIsLoading(false);
-      }
+    }
   };
 
   const fetchDirectiveName = async () => {
@@ -101,12 +99,10 @@ const Chatbot = () => {
             setDirectiveName(directive.name);
         }
     } catch (error) {
-        const errorMessage = `There was an loading directive data${formatError(error)}Please reload the page.`;
+        const errorMessage = `There was an loading directive metadata${formatError(error)}Please reload the page.`;
         console.error(errorMessage);
         setCallError(errorMessage);
-    } finally {
-        setIsLoading(false);
-      }
+    }
   };
 
   const renderMessage = (message, index) => (
@@ -154,9 +150,12 @@ const Chatbot = () => {
                 <h2>{chatName}</h2>
             </div>
             {isLoading ? (
-            <Spinner animation="border" role="status">
-                <span className="sr-only">Loading...</span>
-            </Spinner>
+             <div className="d-flex align-items-center">
+                <Spinner animation="border" role="status" className="mr-2">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>
+                <span>Loading chat... (can take ~30s)</span>            
+            </div>
             ) : (
                 <ListGroup style={{ maxHeight: '400px', overflowY: 'scroll' }}>
                     {messages.map(renderMessage)}
